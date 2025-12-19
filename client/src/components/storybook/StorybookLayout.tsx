@@ -29,7 +29,7 @@ export function StorybookLayout() {
     },
     {
       name: "Data Display",
-      components: ["Table", "Card", "List", "Chip", "Avatar", "Badge", "Tooltip", "Typography", "Accordion", "Timeline", "TreeView"]
+      components: ["Table", "Card", "List", "Chip", "Avatar", "Badge", "Tooltip", "Typography", "Accordion", "Timeline", "TreeView", "LineChart", "BarChart", "PieChart", "AreaChart", "ScatterChart", "RadarChart", "ComposedChart"]
     },
     {
       name: "Navigation",
@@ -99,7 +99,14 @@ export function StorybookLayout() {
     Stack: ["Basic", "Direction", "Spacing"],
     Divider: ["Basic", "Vertical", "With Text"],
     Paper: ["Basic", "Elevation", "Outlined"],
-    ImageList: ["Standard", "Quilted", "Woven"]
+    ImageList: ["Standard", "Quilted", "Woven"],
+    LineChart: ["Default", "SingleLine", "SmoothCurve", "WithDots", "DashedLines", "AreaFill"],
+    BarChart: ["Default", "SingleBar", "Horizontal", "Stacked", "Rounded", "Gradient"],
+    PieChart: ["Default", "Donut", "FullPie", "WithLabels", "CustomColors", "Small"],
+    AreaChart: ["Default", "SingleArea", "Stacked", "Gradient", "Smooth", "NoGrid"],
+    ScatterChart: ["Default", "WithSize", "VariableSize", "MultipleSeries", "CustomShapes", "WithLabels"],
+    RadarChart: ["Default", "SingleRadar", "NoFill", "Dotted", "CustomRadius", "Small"],
+    ComposedChart: ["BarAndLine", "AreaAndLine", "BarAreaLine", "StackedBarAndLine", "GradientComposed", "CustomAxes"]
   };
 
   const toggleTheme = () => {
@@ -1117,6 +1124,66 @@ export function StorybookLayout() {
             };
         }
 
+      case "LineChart":
+        return {
+          showGrid: true,
+          showTooltip: true,
+          showLegend: true,
+          strokeWidth: 2,
+          dotSize: 4,
+          animation: true,
+        };
+      case "AreaChart":
+        return {
+          showGrid: true,
+          showTooltip: true,
+          showLegend: true,
+          strokeWidth: 2,
+          fillOpacity: 0.6,
+          animation: true,
+        };
+      case "BarChart":
+        return {
+          showGrid: true,
+          showTooltip: true,
+          showLegend: true,
+          barRadius: 0,
+          animation: true,
+        };
+      case "PieChart":
+        return {
+          showTooltip: true,
+          showLegend: true,
+          innerRadius: 60,
+          outerRadius: 100,
+          paddingAngle: 2,
+          animation: true,
+        };
+      case "RadarChart":
+        return {
+          showGrid: true,
+          showTooltip: true,
+          showLegend: true,
+          fillOpacity: 0.6,
+          strokeWidth: 2,
+          animation: true,
+        };
+      case "ScatterChart":
+        return {
+          showGrid: true,
+          showTooltip: true,
+          pointSize: 6,
+          animation: true,
+        };
+      case "ComposedChart":
+        return {
+          showGrid: true,
+          showTooltip: true,
+          showLegend: true,
+          strokeWidth: 2,
+          barRadius: 0,
+          animation: true,
+        };
       default:
         return {
           variant: "contained",
@@ -1259,6 +1326,7 @@ export function StorybookLayout() {
                 controls={controls}
                 viewport={viewport}
                 zoom={zoom}
+                theme={theme}
               />
             </div>
             <div className="w-80 overflow-auto border-l">

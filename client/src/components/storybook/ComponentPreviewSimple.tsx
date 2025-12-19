@@ -88,6 +88,29 @@ import {
   AccordionDetails,
   AvatarGroup
 } from '@mui/material';
+import { 
+  LineChart, 
+  BarChart, 
+  PieChart, 
+  AreaChart, 
+  ScatterChart, 
+  RadarChart, 
+  ComposedChart,
+  Line, 
+  Bar, 
+  Pie, 
+  Area, 
+  Scatter, 
+  Radar,
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  PolarGrid, 
+  PolarAngleAxis, 
+  PolarRadiusAxis,
+  Cell
+} from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '../ui/chart';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -132,14 +155,40 @@ interface ComponentPreviewProps {
   controls: ComponentControls;
   viewport: string;
   zoom: number;
+  theme?: string;
 }
 
-export function ComponentPreview({ component, story, controls, viewport, zoom }: ComponentPreviewProps) {
+export function ComponentPreview({ component, story, controls, viewport, zoom, theme = "light" }: ComponentPreviewProps) {
   const [selectedViewport, setSelectedViewport] = useState(viewport || 'desktop');
   const [currentZoom, setCurrentZoom] = useState(zoom && zoom > 0 ? zoom / 100 : 1);
   const [tabValue, setTabValue] = useState(controls.value || 0);
   const [isDark, setIsDark] = useState(false);
   const [currentView, setCurrentView] = useState<'canvas' | 'design'>('canvas');
+
+  // Generate theme-aware chart colors
+  const getChartColors = (isDark: boolean) => {
+    if (isDark) {
+      return {
+        primary: '#90caf9',
+        secondary: '#f48fb1', 
+        tertiary: '#a5d6a7',
+        quaternary: '#ffcc80',
+        quinary: '#ce93d8',
+        senary: '#80cbc4'
+      };
+    } else {
+      return {
+        primary: '#1976d2',
+        secondary: '#dc004e',
+        tertiary: '#2e7d32', 
+        quaternary: '#f57c00',
+        quinary: '#7b1fa2',
+        senary: '#00695c'
+      };
+    }
+  };
+
+  const chartColors = getChartColors(theme === 'dark');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [popperAnchor, setPopperAnchor] = useState<null | HTMLElement>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -1856,6 +1905,371 @@ export function ComponentPreview({ component, story, controls, viewport, zoom }:
               )}
             </div>
           </div>
+        );
+
+      // Chart Components
+      case "LineChart":
+        const lineData = [
+          { month: 'January', desktop: 186, mobile: 80 },
+          { month: 'February', desktop: 305, mobile: 200 },
+          { month: 'March', desktop: 237, mobile: 120 },
+          { month: 'April', desktop: 73, mobile: 190 },
+          { month: 'May', desktop: 209, mobile: 130 },
+          { month: 'June', desktop: 214, mobile: 140 },
+        ];
+        const lineChartConfig = {
+          desktop: { label: 'Desktop', color: chartColors.primary },
+          mobile: { label: 'Mobile', color: chartColors.secondary },
+        };
+        
+        switch (story) {
+          case "SingleLine":
+            return (
+              <ChartContainer config={{ desktop: { label: 'Users', color: chartColors.primary } }} className="w-full h-[300px]">
+                <LineChart data={lineData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Line type="monotone" dataKey="desktop" stroke={chartColors.primary} strokeWidth={3} dot={{ fill: chartColors.primary, strokeWidth: 2, r: 4 }} />
+                </LineChart>
+              </ChartContainer>
+            );
+          case "SmoothCurve":
+            return (
+              <ChartContainer config={lineChartConfig} className="w-full h-[300px]">
+                <LineChart data={lineData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Line type="monotone" dataKey="desktop" stroke={chartColors.primary} strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="mobile" stroke={chartColors.secondary} strokeWidth={2} dot={false} />
+                </LineChart>
+              </ChartContainer>
+            );
+          case "WithDots":
+            return (
+              <ChartContainer config={lineChartConfig} className="w-full h-[300px]">
+                <LineChart data={lineData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Line type="monotone" dataKey="desktop" stroke={chartColors.primary} strokeWidth={2} dot={{ fill: chartColors.primary, strokeWidth: 2, r: 6 }} activeDot={{ r: 8, stroke: chartColors.primary, strokeWidth: 2 }} />
+                  <Line type="monotone" dataKey="mobile" stroke={chartColors.secondary} strokeWidth={2} dot={{ fill: chartColors.secondary, strokeWidth: 2, r: 6 }} activeDot={{ r: 8, stroke: chartColors.secondary, strokeWidth: 2 }} />
+                </LineChart>
+              </ChartContainer>
+            );
+          case "DashedLines":
+            return (
+              <ChartContainer config={lineChartConfig} className="w-full h-[300px]">
+                <LineChart data={lineData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Line type="monotone" dataKey="desktop" stroke={chartColors.primary} strokeWidth={2} strokeDasharray="5 5" />
+                  <Line type="monotone" dataKey="mobile" stroke={chartColors.secondary} strokeWidth={2} strokeDasharray="10 5" />
+                </LineChart>
+              </ChartContainer>
+            );
+          case "AreaFill":
+            return (
+              <ChartContainer config={lineChartConfig} className="w-full h-[300px]">
+                <LineChart data={lineData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Line type="monotone" dataKey="desktop" stroke={chartColors.primary} strokeWidth={2} fill={chartColors.primary} fillOpacity={0.1} />
+                  <Line type="monotone" dataKey="mobile" stroke={chartColors.secondary} strokeWidth={2} fill={chartColors.secondary} fillOpacity={0.1} />
+                </LineChart>
+              </ChartContainer>
+            );
+          default: // Default
+            return (
+              <ChartContainer config={lineChartConfig} className="w-full h-[300px]">
+                <LineChart data={lineData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Line type="monotone" dataKey="desktop" stroke={chartColors.primary} strokeWidth={2} />
+                  <Line type="monotone" dataKey="mobile" stroke={chartColors.secondary} strokeWidth={2} />
+                </LineChart>
+              </ChartContainer>
+            );
+        }
+
+      case "BarChart":
+        const barData = [
+          { name: 'Jan', desktop: 186, mobile: 80, tablet: 50 },
+          { name: 'Feb', desktop: 305, mobile: 200, tablet: 120 },
+          { name: 'Mar', desktop: 237, mobile: 120, tablet: 80 },
+          { name: 'Apr', desktop: 73, mobile: 190, tablet: 100 },
+          { name: 'May', desktop: 209, mobile: 130, tablet: 90 },
+          { name: 'Jun', desktop: 214, mobile: 140, tablet: 110 },
+        ];
+        const barChartConfig = {
+          desktop: { label: 'Desktop', color: chartColors.primary },
+          mobile: { label: 'Mobile', color: chartColors.secondary },
+          tablet: { label: 'Tablet', color: chartColors.tertiary },
+        };
+        
+        switch (story) {
+          case "SingleBar":
+            return (
+              <ChartContainer config={{ desktop: { label: 'Sales', color: chartColors.primary } }} className="w-full h-[300px]">
+                <BarChart data={barData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="desktop" fill={chartColors.primary} />
+                </BarChart>
+              </ChartContainer>
+            );
+          case "Horizontal":
+            return (
+              <ChartContainer config={barChartConfig} className="w-full h-[300px]">
+                <BarChart data={barData} layout="horizontal">
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis type="number" />
+                  <YAxis dataKey="name" type="category" width={80} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Bar dataKey="desktop" fill={chartColors.primary} />
+                  <Bar dataKey="mobile" fill={chartColors.secondary} />
+                  <Bar dataKey="tablet" fill={chartColors.tertiary} />
+                </BarChart>
+              </ChartContainer>
+            );
+          case "Stacked":
+            return (
+              <ChartContainer config={barChartConfig} className="w-full h-[300px]">
+                <BarChart data={barData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Bar dataKey="desktop" stackId="a" fill={chartColors.primary} />
+                  <Bar dataKey="mobile" stackId="a" fill={chartColors.secondary} />
+                  <Bar dataKey="tablet" stackId="a" fill={chartColors.tertiary} />
+                </BarChart>
+              </ChartContainer>
+            );
+          case "Rounded":
+            return (
+              <ChartContainer config={barChartConfig} className="w-full h-[300px]">
+                <BarChart data={barData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Bar dataKey="desktop" fill={chartColors.primary} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="mobile" fill={chartColors.secondary} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="tablet" fill={chartColors.tertiary} radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ChartContainer>
+            );
+          case "Gradient":
+            return (
+              <ChartContainer config={barChartConfig} className="w-full h-[300px]">
+                <defs>
+                  <linearGradient id="desktopGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={chartColors.primary} stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor={chartColors.primary} stopOpacity={0.1}/>
+                  </linearGradient>
+                  <linearGradient id="mobileGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={chartColors.secondary} stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor={chartColors.secondary} stopOpacity={0.1}/>
+                  </linearGradient>
+                  <linearGradient id="tabletGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={chartColors.tertiary} stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor={chartColors.tertiary} stopOpacity={0.1}/>
+                  </linearGradient>
+                </defs>
+                <BarChart data={barData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Bar dataKey="desktop" fill="url(#desktopGradient)" />
+                  <Bar dataKey="mobile" fill="url(#mobileGradient)" />
+                  <Bar dataKey="tablet" fill="url(#tabletGradient)" />
+                </BarChart>
+              </ChartContainer>
+            );
+          default: // Default
+            return (
+              <ChartContainer config={barChartConfig} className="w-full h-[300px]">
+                <BarChart data={barData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Bar dataKey="desktop" fill={chartColors.primary} />
+                  <Bar dataKey="mobile" fill={chartColors.secondary} />
+                  <Bar dataKey="tablet" fill={chartColors.tertiary} />
+                </BarChart>
+              </ChartContainer>
+            );
+        }
+
+      case "PieChart":
+        const pieData = [
+          { name: 'Desktop', value: 186, fill: chartColors.primary },
+          { name: 'Mobile', value: 200, fill: chartColors.secondary },
+          { name: 'Tablet', value: 120, fill: chartColors.tertiary },
+          { name: 'Other', value: 50, fill: chartColors.quaternary },
+        ];
+        const pieChartConfig = {
+          Desktop: { label: 'Desktop', color: chartColors.primary },
+          Mobile: { label: 'Mobile', color: chartColors.secondary },
+          Tablet: { label: 'Tablet', color: chartColors.tertiary },
+          Other: { label: 'Other', color: chartColors.quaternary },
+        };
+        return (
+          <ChartContainer config={pieChartConfig} className="w-full h-[300px]">
+            <PieChart>
+              <Pie
+                data={pieData}
+                dataKey="value"
+                nameKey="name"
+                innerRadius={60}
+                outerRadius={100}
+                paddingAngle={2}
+              >
+                {pieData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                ))}
+              </Pie>
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartLegend content={<ChartLegendContent />} />
+            </PieChart>
+          </ChartContainer>
+        );
+
+      case "AreaChart":
+        const areaData = [
+          { month: 'January', desktop: 186, mobile: 80 },
+          { month: 'February', desktop: 305, mobile: 200 },
+          { month: 'March', desktop: 237, mobile: 120 },
+          { month: 'April', desktop: 73, mobile: 190 },
+          { month: 'May', desktop: 209, mobile: 130 },
+          { month: 'June', desktop: 214, mobile: 140 },
+        ];
+        const areaChartConfig = {
+          desktop: { label: 'Desktop', color: chartColors.primary },
+          mobile: { label: 'Mobile', color: chartColors.secondary },
+        };
+        return (
+          <ChartContainer config={areaChartConfig} className="w-full h-[300px]">
+            <AreaChart data={areaData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Area type="monotone" dataKey="desktop" stackId="1" stroke="var(--color-desktop)" fill="var(--color-desktop)" />
+              <Area type="monotone" dataKey="mobile" stackId="1" stroke="var(--color-mobile)" fill="var(--color-mobile)" />
+            </AreaChart>
+          </ChartContainer>
+        );
+
+      case "ScatterChart":
+        const scatterData = [
+          { x: 100, y: 200, z: 200, name: 'A' },
+          { x: 120, y: 100, z: 260, name: 'B' },
+          { x: 170, y: 300, z: 400, name: 'C' },
+          { x: 140, y: 250, z: 280, name: 'D' },
+          { x: 150, y: 400, z: 500, name: 'E' },
+          { x: 110, y: 280, z: 200, name: 'F' },
+          { x: 200, y: 150, z: 300, name: 'G' },
+          { x: 180, y: 350, z: 450, name: 'H' },
+        ];
+        const scatterChartConfig = {
+          x: { label: 'X Value', color: chartColors.primary },
+          y: { label: 'Y Value', color: chartColors.secondary },
+          z: { label: 'Z Value', color: chartColors.tertiary },
+        };
+        return (
+          <ChartContainer config={scatterChartConfig} className="w-full h-[300px]">
+            <ScatterChart data={scatterData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="x" name="X" />
+              <YAxis dataKey="y" name="Y" />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Scatter dataKey="y" fill="var(--color-y)" r={6} />
+            </ScatterChart>
+          </ChartContainer>
+        );
+
+      case "RadarChart":
+        const radarData = [
+          { subject: 'Math', A: 120, B: 110, fullMark: 150 },
+          { subject: 'Chinese', A: 98, B: 130, fullMark: 150 },
+          { subject: 'English', A: 86, B: 130, fullMark: 150 },
+          { subject: 'Geography', A: 99, B: 100, fullMark: 150 },
+          { subject: 'Physics', A: 85, B: 90, fullMark: 150 },
+          { subject: 'History', A: 65, B: 85, fullMark: 150 },
+        ];
+        const radarChartConfig = {
+          A: { label: 'Student A', color: chartColors.primary },
+          B: { label: 'Student B', color: chartColors.secondary },
+        };
+        return (
+          <ChartContainer config={radarChartConfig} className="w-full h-[300px]">
+            <RadarChart data={radarData}>
+              <PolarGrid />
+              <PolarAngleAxis dataKey="subject" />
+              <PolarRadiusAxis />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Radar name="A" dataKey="A" stroke="var(--color-A)" fill="var(--color-A)" fillOpacity={0.6} />
+              <Radar name="B" dataKey="B" stroke="var(--color-B)" fill="var(--color-B)" fillOpacity={0.6} />
+            </RadarChart>
+          </ChartContainer>
+        );
+
+      case "ComposedChart":
+        const composedData = [
+          { month: 'Jan', desktop: 186, mobile: 80, revenue: 2400 },
+          { month: 'Feb', desktop: 305, mobile: 200, revenue: 1398 },
+          { month: 'Mar', desktop: 237, mobile: 120, revenue: 9800 },
+          { month: 'Apr', desktop: 73, mobile: 190, revenue: 3908 },
+          { month: 'May', desktop: 209, mobile: 130, revenue: 4800 },
+          { month: 'Jun', desktop: 214, mobile: 140, revenue: 3800 },
+        ];
+        const composedChartConfig = {
+          desktop: { label: 'Desktop', color: chartColors.primary },
+          mobile: { label: 'Mobile', color: chartColors.secondary },
+          revenue: { label: 'Revenue', color: chartColors.tertiary },
+        };
+        return (
+          <ChartContainer config={composedChartConfig} className="w-full h-[300px]">
+            <ComposedChart data={composedData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis yAxisId="left" />
+              <YAxis yAxisId="right" orientation="right" />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Bar yAxisId="left" dataKey="desktop" fill="var(--color-desktop)" />
+              <Bar yAxisId="left" dataKey="mobile" fill="var(--color-mobile)" />
+              <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="var(--color-revenue)" strokeWidth={2} />
+            </ComposedChart>
+          </ChartContainer>
         );
 
       default:
@@ -4371,6 +4785,56 @@ export function ComponentPreview({ component, story, controls, viewport, zoom }:
 
 
 
+
+      case "LineChart":
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '32px' }}>
+            <div>
+              <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#333' }}>Line Chart Variants</h3>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <div style={{ padding: '8px 16px', backgroundColor: '#f0f9ff', borderRadius: '6px', border: '1px solid #0ea5e9' }}>
+                  <Typography variant="body2" style={{ color: '#0369a1' }}>Default - Multi-line chart</Typography>
+                </div>
+                <div style={{ padding: '8px 16px', backgroundColor: '#f0fdf4', borderRadius: '6px', border: '1px solid #22c55e' }}>
+                  <Typography variant="body2" style={{ color: '#15803d' }}>SingleLine - Single data series</Typography>
+                </div>
+                <div style={{ padding: '8px 16px', backgroundColor: '#fef3c7', borderRadius: '6px', border: '1px solid #f59e0b' }}>
+                  <Typography variant="body2" style={{ color: '#d97706' }}>SmoothCurve - Smooth lines</Typography>
+                </div>
+                <div style={{ padding: '8px 16px', backgroundColor: '#fce7f3', borderRadius: '6px', border: '1px solid #ec4899' }}>
+                  <Typography variant="body2" style={{ color: '#be185d' }}>WithDots - Interactive dots</Typography>
+                </div>
+                <div style={{ padding: '8px 16px', backgroundColor: '#f3e8ff', borderRadius: '6px', border: '1px solid #a855f7' }}>
+                  <Typography variant="body2" style={{ color: '#7c3aed' }}>DashedLines - Dashed styles</Typography>
+                </div>
+                <div style={{ padding: '8px 16px', backgroundColor: '#ecfdf5', borderRadius: '6px', border: '1px solid #10b981' }}>
+                  <Typography variant="body2" style={{ color: '#047857' }}>AreaFill - Filled areas</Typography>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#333' }}>Use Cases</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+                <div style={{ padding: '12px', backgroundColor: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                  <Typography variant="body2" style={{ fontWeight: '500', marginBottom: '4px' }}>📈 Trend Analysis</Typography>
+                  <Typography variant="body2" style={{ color: '#64748b', fontSize: '12px' }}>Track data changes over time</Typography>
+                </div>
+                <div style={{ padding: '12px', backgroundColor: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                  <Typography variant="body2" style={{ fontWeight: '500', marginBottom: '4px' }}>📊 Performance Metrics</Typography>
+                  <Typography variant="body2" style={{ color: '#64748b', fontSize: '12px' }}>Monitor KPIs and metrics</Typography>
+                </div>
+                <div style={{ padding: '12px', backgroundColor: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                  <Typography variant="body2" style={{ fontWeight: '500', marginBottom: '4px' }}>📉 Sales Data</Typography>
+                  <Typography variant="body2" style={{ color: '#64748b', fontSize: '12px' }}>Visualize sales trends</Typography>
+                </div>
+                <div style={{ padding: '12px', backgroundColor: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                  <Typography variant="body2" style={{ fontWeight: '500', marginBottom: '4px' }}>📈 User Analytics</Typography>
+                  <Typography variant="body2" style={{ color: '#64748b', fontSize: '12px' }}>Track user behavior</Typography>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
 
       default:
         return (

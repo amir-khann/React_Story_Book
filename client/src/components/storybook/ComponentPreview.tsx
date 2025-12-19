@@ -62,6 +62,121 @@ import {
   ImageList,
   ImageListItem
 } from "@mui/material";
+import { 
+  LineChart, 
+  Line, 
+  AreaChart, 
+  Area, 
+  BarChart, 
+  Bar, 
+  PieChart, 
+  Pie, 
+  Cell, 
+  ComposedChart, 
+  RadarChart, 
+  PolarGrid, 
+  PolarAngleAxis, 
+  PolarRadiusAxis, 
+  Radar, 
+  ScatterChart, 
+  Scatter, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  ResponsiveContainer 
+} from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '../ui/chart';
+
+// Chart data
+const lineChartData = [
+  { month: 'January', desktop: 186, mobile: 80 },
+  { month: 'February', desktop: 305, mobile: 200 },
+  { month: 'March', desktop: 237, mobile: 120 },
+  { month: 'April', desktop: 73, mobile: 190 },
+  { month: 'May', desktop: 209, mobile: 130 },
+  { month: 'June', desktop: 214, mobile: 140 },
+];
+
+const barChartData = [
+  { name: 'Jan', desktop: 186, mobile: 80, tablet: 50 },
+  { name: 'Feb', desktop: 305, mobile: 200, tablet: 120 },
+  { name: 'Mar', desktop: 237, mobile: 120, tablet: 80 },
+  { name: 'Apr', desktop: 73, mobile: 190, tablet: 100 },
+  { name: 'May', desktop: 209, mobile: 130, tablet: 90 },
+  { name: 'Jun', desktop: 214, mobile: 140, tablet: 110 },
+];
+
+const pieChartData = [
+  { name: 'Desktop', value: 186, fill: 'hsl(var(--chart-1))' },
+  { name: 'Mobile', value: 200, fill: 'hsl(var(--chart-2))' },
+  { name: 'Tablet', value: 120, fill: 'hsl(var(--chart-3))' },
+  { name: 'Other', value: 50, fill: 'hsl(var(--chart-4))' },
+];
+
+const radarChartData = [
+  { subject: 'Math', A: 120, B: 110, fullMark: 150 },
+  { subject: 'Chinese', A: 98, B: 130, fullMark: 150 },
+  { subject: 'English', A: 86, B: 130, fullMark: 150 },
+  { subject: 'Geography', A: 99, B: 100, fullMark: 150 },
+  { subject: 'Physics', A: 85, B: 90, fullMark: 150 },
+  { subject: 'History', A: 65, B: 85, fullMark: 150 },
+];
+
+const scatterChartData = [
+  { x: 100, y: 200, z: 200, name: 'A' },
+  { x: 120, y: 100, z: 260, name: 'B' },
+  { x: 170, y: 300, z: 400, name: 'C' },
+  { x: 140, y: 250, z: 280, name: 'D' },
+  { x: 150, y: 400, z: 500, name: 'E' },
+  { x: 110, y: 280, z: 200, name: 'F' },
+  { x: 200, y: 150, z: 300, name: 'G' },
+  { x: 180, y: 350, z: 450, name: 'H' },
+];
+
+const composedChartData = [
+  { month: 'Jan', desktop: 186, mobile: 80, revenue: 2400 },
+  { month: 'Feb', desktop: 305, mobile: 200, revenue: 1398 },
+  { month: 'Mar', desktop: 237, mobile: 120, revenue: 9800 },
+  { month: 'Apr', desktop: 73, mobile: 190, revenue: 3908 },
+  { month: 'May', desktop: 209, mobile: 130, revenue: 4800 },
+  { month: 'Jun', desktop: 214, mobile: 140, revenue: 3800 },
+];
+
+// Chart configurations
+const lineChartConfig = {
+  desktop: { label: 'Desktop', color: 'hsl(var(--chart-1))' },
+  mobile: { label: 'Mobile', color: 'hsl(var(--chart-2))' },
+};
+
+const barChartConfig = {
+  desktop: { label: 'Desktop', color: 'hsl(var(--chart-1))' },
+  mobile: { label: 'Mobile', color: 'hsl(var(--chart-2))' },
+  tablet: { label: 'Tablet', color: 'hsl(var(--chart-3))' },
+};
+
+const pieChartConfig = {
+  Desktop: { label: 'Desktop', color: 'hsl(var(--chart-1))' },
+  Mobile: { label: 'Mobile', color: 'hsl(var(--chart-2))' },
+  Tablet: { label: 'Tablet', color: 'hsl(var(--chart-3))' },
+  Other: { label: 'Other', color: 'hsl(var(--chart-4))' },
+};
+
+const radarChartConfig = {
+  A: { label: 'Student A', color: 'hsl(var(--chart-1))' },
+  B: { label: 'Student B', color: 'hsl(var(--chart-2))' },
+};
+
+const scatterChartConfig = {
+  x: { label: 'X Value', color: 'hsl(var(--chart-1))' },
+  y: { label: 'Y Value', color: 'hsl(var(--chart-2))' },
+  z: { label: 'Z Value', color: 'hsl(var(--chart-3))' },
+};
+
+const composedChartConfig = {
+  desktop: { label: 'Desktop', color: 'hsl(var(--chart-1))' },
+  mobile: { label: 'Mobile', color: 'hsl(var(--chart-2))' },
+  revenue: { label: 'Revenue', color: 'hsl(var(--chart-3))' },
+};
 
 interface ComponentPreviewProps {
   component: string;
@@ -469,6 +584,146 @@ export function ComponentPreview({ component, story, controls, viewport, zoom }:
               ))}
             </div>
           </Box>
+        );
+      case "LineChart":
+        return (
+          <ChartContainer config={lineChartConfig} className="w-full h-[300px]">
+            <LineChart data={lineChartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Line
+                type="monotone"
+                dataKey="desktop"
+                stroke="var(--color-desktop)"
+                strokeWidth={2}
+              />
+              <Line
+                type="monotone"
+                dataKey="mobile"
+                stroke="var(--color-mobile)"
+                strokeWidth={2}
+              />
+            </LineChart>
+          </ChartContainer>
+        );
+      case "AreaChart":
+        return (
+          <ChartContainer config={lineChartConfig} className="w-full h-[300px]">
+            <AreaChart data={lineChartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Area
+                type="monotone"
+                dataKey="desktop"
+                stackId="1"
+                stroke="var(--color-desktop)"
+                fill="var(--color-desktop)"
+              />
+              <Area
+                type="monotone"
+                dataKey="mobile"
+                stackId="1"
+                stroke="var(--color-mobile)"
+                fill="var(--color-mobile)"
+              />
+            </AreaChart>
+          </ChartContainer>
+        );
+      case "BarChart":
+        return (
+          <ChartContainer config={barChartConfig} className="w-full h-[300px]">
+            <BarChart data={barChartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Bar dataKey="desktop" fill="var(--color-desktop)" />
+              <Bar dataKey="mobile" fill="var(--color-mobile)" />
+              <Bar dataKey="tablet" fill="var(--color-tablet)" />
+            </BarChart>
+          </ChartContainer>
+        );
+      case "PieChart":
+        return (
+          <ChartContainer config={pieChartConfig} className="w-full h-[300px]">
+            <PieChart>
+              <Pie
+                data={pieChartData}
+                dataKey="value"
+                nameKey="name"
+                innerRadius={60}
+                outerRadius={100}
+                paddingAngle={2}
+              >
+                {pieChartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                ))}
+              </Pie>
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartLegend content={<ChartLegendContent />} />
+            </PieChart>
+          </ChartContainer>
+        );
+      case "RadarChart":
+        return (
+          <ChartContainer config={radarChartConfig} className="w-full h-[300px]">
+            <RadarChart data={radarChartData}>
+              <PolarGrid />
+              <PolarAngleAxis dataKey="subject" />
+              <PolarRadiusAxis />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Radar
+                name="A"
+                dataKey="A"
+                stroke="var(--color-A)"
+                fill="var(--color-A)"
+                fillOpacity={0.6}
+              />
+              <Radar
+                name="B"
+                dataKey="B"
+                stroke="var(--color-B)"
+                fill="var(--color-B)"
+                fillOpacity={0.6}
+              />
+            </RadarChart>
+          </ChartContainer>
+        );
+      case "ScatterChart":
+        return (
+          <ChartContainer config={scatterChartConfig} className="w-full h-[300px]">
+            <ScatterChart data={scatterChartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="x" name="X" />
+              <YAxis dataKey="y" name="Y" />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Scatter dataKey="y" fill="var(--color-y)" />
+            </ScatterChart>
+          </ChartContainer>
+        );
+      case "ComposedChart":
+        return (
+          <ChartContainer config={composedChartConfig} className="w-full h-[300px]">
+            <ComposedChart data={composedChartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis yAxisId="left" />
+              <YAxis yAxisId="right" orientation="right" />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Bar yAxisId="left" dataKey="desktop" fill="var(--color-desktop)" />
+              <Bar yAxisId="left" dataKey="mobile" fill="var(--color-mobile)" />
+              <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="var(--color-revenue)" strokeWidth={2} />
+            </ComposedChart>
+          </ChartContainer>
         );
       default:
         return (
